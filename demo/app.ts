@@ -1,5 +1,6 @@
 import { AgentLoop, type AgentTraceEntry, type ContextMode, WebLLMRuntime, getPage } from "../src";
 import benchmarkTasksData from "../benchmark/tasks.json";
+import DOMPurify from "dompurify";
 
 interface BenchmarkTask {
   id: string;
@@ -96,7 +97,10 @@ async function runTask(): Promise<void> {
       },
     });
     const agent = new AgentLoop(runtime);
-    const document = new DOMParser().parseFromString(pageInput.value, "text/html");
+    const sanitizedHtml = DOMPurify.sanitize(pageInput.value, {
+      WHOLE_DOCUMENT: true,
+    });
+    const document = new DOMParser().parseFromString(sanitizedHtml, "text/html");
     const page = getPage(document);
     const result = await agent.run({
       goal: goalInput.value.trim(),
