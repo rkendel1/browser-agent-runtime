@@ -1,7 +1,9 @@
 import {
   DECISION_PROBABILITY_STATUS,
   DECISION_PROMPT_VERSION,
+  DECISION_READOUT_TEMPERATURE,
   DECISION_SYSTEM_PROMPT,
+  LOW_OPTION_MASS_THRESHOLD,
   assertValidDecisionInput,
   buildDecisionPrompt,
   estimateTokens,
@@ -38,6 +40,9 @@ export interface WebLLMDecisionEngine {
         temperature?: number;
         logprobs?: boolean;
         top_logprobs?: number;
+        repetition_penalty?: number;
+        frequency_penalty?: number;
+        presence_penalty?: number;
       }): Promise<WebLLMChatCompletion>;
     };
   };
@@ -115,9 +120,17 @@ export class WebLLMDecisionRuntime implements DecisionRuntime {
       // sampled token is discarded, which is why the trace counts 0 generated
       // tokens: nothing the model wrote is read back.
       max_tokens: 1,
-      temperature: 0,
+      // See DECISION_READOUT_TEMPERATURE: at 0 the reported distribution is
+      // one-hot and the readout stops meaning anything.
+      temperature: DECISION_READOUT_TEMPERATURE,
       logprobs: true,
       top_logprobs: topLogprobs,
+      // Neutral penalties, so the reported distribution is the model's own.
+      // web-llm only penalizes tokens it has already generated, and this
+      // request generates none, but the readout should not depend on that.
+      repetition_penalty: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
     });
     const latencyMs = now() - startedAt;
 
@@ -140,6 +153,7 @@ export class WebLLMDecisionRuntime implements DecisionRuntime {
         options: input.options.length,
         selected,
         optionMass,
+        lowOptionMass: optionMass < LOW_OPTION_MASS_THRESHOLD,
         probabilityStatus: DECISION_PROBABILITY_STATUS,
         promptVersion: DECISION_PROMPT_VERSION,
         promptSha256: await promptDigest(prompt),

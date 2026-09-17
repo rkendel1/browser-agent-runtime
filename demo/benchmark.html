@@ -86,6 +86,56 @@
         color: #94a3b8;
       }
 
+      .warning {
+        color: #fca5a5;
+        font-weight: 600;
+      }
+
+      fieldset {
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 12px;
+        margin: 0 0 16px;
+        padding: 12px;
+      }
+
+      legend {
+        font-weight: 600;
+      }
+
+      #benchmark-conditions {
+        display: grid;
+        gap: 4px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        margin: 4px 0;
+      }
+
+      .checkbox-row input {
+        width: auto;
+        margin: 0;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button.secondary {
+        background: #1e293b;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       .wrong {
         color: #fca5a5;
       }
@@ -106,8 +156,8 @@
       <section class="panel">
         <h1>Decision benchmark</h1>
         <p class="muted">
-          The same model and the same 20 fixtures, taken twice: once by generating an answer and
-          parsing it, once by reading the option-token logits directly.
+          One loaded model, 20 fixtures, two readouts, three context sources: the fixture's own
+          state, its full page, and the chunks <code>search_context</code> retrieves from that page.
           <a href="./index.html">← Back to the demo</a>
         </p>
 
@@ -117,14 +167,6 @@
             <select id="benchmark-model"></select>
           </div>
           <div>
-            <label for="benchmark-paths">Paths</label>
-            <select id="benchmark-paths">
-              <option value="both">Generated and direct logits</option>
-              <option value="direct">Direct logits only</option>
-              <option value="generated">Generated only</option>
-            </select>
-          </div>
-          <div>
             <label for="benchmark-limit">Fixtures</label>
             <select id="benchmark-limit">
               <option value="20">All 20</option>
@@ -132,19 +174,49 @@
               <option value="1">First 1</option>
             </select>
           </div>
+          <div>
+            <label>Probes</label>
+            <label class="checkbox-row">
+              <input type="checkbox" id="benchmark-probes" checked />
+              Run the option mass probes
+            </label>
+          </div>
         </div>
 
-        <button id="benchmark-run">Run benchmark</button>
+        <fieldset>
+          <legend>Conditions</legend>
+          <div id="benchmark-conditions"></div>
+        </fieldset>
+
+        <div class="button-row">
+          <button id="benchmark-run">Run benchmark</button>
+          <button id="benchmark-export" class="secondary">Export JSON</button>
+          <button id="benchmark-copy" class="secondary">Copy JSON</button>
+        </div>
         <p id="benchmark-status" class="muted">
-          Both paths load the same model, so the first run downloads weights once.
+          Every condition runs on one loaded model, so the first run downloads weights once.
         </p>
         <p id="benchmark-pin" class="muted"></p>
+        <p id="benchmark-engine" class="muted"></p>
       </section>
 
       <section class="panel">
-        <h2>Results</h2>
+        <h2>Conditions</h2>
         <div id="benchmark-summary"></div>
-        <h2>Per fixture</h2>
+      </section>
+
+      <section class="panel">
+        <h2>Direct vs generated, per fixture</h2>
+        <div id="benchmark-comparison"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Option mass probes</h2>
+        <div id="benchmark-probes-results"></div>
+      </section>
+
+      <section class="panel">
+        <h2>All runs</h2>
         <div id="benchmark-rows"></div>
       </section>
 

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   DECISION_PROMPT_VERSION,
+  DECISION_READOUT_TEMPERATURE,
   DecisionReadoutError,
   buildDecisionPrompt,
   resolveOptionProbabilities,
@@ -155,10 +156,19 @@ describe("WebLLMDecisionRuntime", () => {
 
     const request = create.mock.calls[0]![0];
     expect(request.max_tokens).toBe(1);
-    expect(request.temperature).toBe(0);
     expect(request.logprobs).toBe(true);
     expect(request.top_logprobs).toBe(5);
     expect(request.messages[1]!.content).toBe(buildDecisionPrompt(input));
+
+    // web-llm reports logprobs from softmax(logits / max(temperature, 1e-6)),
+    // so a temperature of 0 would hand back a one-hot distribution and every
+    // decision would read 100% / 0%. The readout needs the real distribution.
+    expect(request.temperature).toBe(DECISION_READOUT_TEMPERATURE);
+    expect(DECISION_READOUT_TEMPERATURE).toBe(1);
+    // Penalties must not reshape the distribution being read.
+    expect(request.repetition_penalty).toBe(1);
+    expect(request.frequency_penalty).toBe(0);
+    expect(request.presence_penalty).toBe(0);
   });
 
   it("caps top_logprobs at what the engine supports", async () => {

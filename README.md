@@ -23,7 +23,9 @@ DecisionRuntime
 - observable `AgentLoop` trace
 - demo UI with an entire-page vs retrieved-context toggle and a Browser Decision panel
 - `benchmark/tasks.json` with 20 retrieval tasks, `benchmark/decisions.json` with 20 decisions
-- a browser benchmark comparing a generated answer against a direct logit readout
+  (each carrying a page and a retrieval query) and six option-mass probes
+- a browser benchmark that runs both readouts across three context sources on one
+  loaded model, and exports the whole run as JSON
 
 ## Decisions instead of answers
 
@@ -108,53 +110,147 @@ is checked.
 
 ## Benchmark
 
-`npm run benchmark` opens a page that runs `benchmark/decisions.json` (20 fixtures: 15 binary, 5
-with 3–4 options) through both paths on **the same model instance**:
+`npm run benchmark` opens a page that runs every condition on **one loaded
+model** in one browser: the same weights, the same fixtures, the same session.
 
 ```
-                SAME MODEL
-                    │
-          ┌─────────┴─────────┐
-          ↓                   ↓
-    Generated answer     Direct logits
-          ↓                   ↓
-       parse choice        choice
+                        Chromium
+                           ↓
+                        WebGPU
+                           ↓
+                       MLCEngine
+                           ↓
+                   same model weights
+                    ├── GeneratedDecisionRuntime
+                    └── WebLLMDecisionRuntime
 ```
 
-It reports accuracy, median latency, output tokens and context tokens per path, plus how often the
-two paths picked the same option:
+### The experiment
+
+Each of the 20 fixtures carries a page that contains its state among distractor
+sections, so context quality is a variable rather than an assumption. Every
+fixture runs through two readouts across three context sources:
+
+|                   | Generated | Direct logits |
+| --- | --- | --- |
+| Full page         | A | C |
+| Retrieved context | B | D |
+| State only        | control | control |
+
+The state-only row is the control: the decision with no page and no retrieval in
+the way. Retrieved-context rows also record whether the retrieved chunks
+actually held the state (`retrievedStateHit`), so a wrong answer over context
+that never contained the evidence is not charged to the decision path.
+
+Nothing here predicts a winner. The table below is empty because no run on real
+weights has happened yet.
 
 | Path | Accuracy | Median latency | Output tokens |
 | --- | --- | --- | --- |
 | Generated | — | — | — |
 | Direct logits | — | — | 0 |
 
-The table is left empty on purpose. This PR's job is to establish the measurement, not to hit an
-accuracy target. Agreement between the paths is a systems comparison, not a claim that the two
-readouts are semantically equivalent — the same caution OpenJev's benchmark carries.
+### What the two paths report
 
-The generated arm is deliberately the most compact generation there is: one letter, no JSON, no
-explanation. It is also the arm that cannot return a distribution — a parsed answer is one option at
-probability 1.
+They are not the same quantity, and the report keeps them apart:
+
+```
+Direct logits          Generated
+  selected               selected
+  optionMass             latency
+  latency                generatedTokens
+              Agreement: yes/no
+```
+
+The direct path reports P(option label | prompt). The generated path reports a
+parsed choice. Agreement between them is a systems comparison, not evidence that
+the two readouts are semantically equivalent — the same caution OpenJev's
+benchmark carries. The direct probabilities are never called confidence.
+
+### Option mass, and the failure it catches
+
+`optionMass` is the probability the model left on the option labels before
+renormalization (OpenJev's `allowed_token_mass`). A decision can read
+
+```json
+{
+  "selected": "yes",
+  "probabilities": { "yes": 0.51, "no": 0.49 },
+  "optionMass": 0.18,
+  "lowOptionMass": true
+}
+```
+
+which is not "51% confidence". It is a near-tie between two labels that together
+held under a fifth of the model's next-token probability — the model was not
+answering the question. `benchmark/option-mass-probes.json` holds six decisions
+built to provoke exactly this: unrelated evidence, no evidence, both options
+true, neither option applicable, a question that invites prose, and
+self-contradicting evidence. They are scored on nothing; the run only records
+what the mass did.
+
+`lowOptionMass` is a diagnostic marker against a provisional threshold
+(`LOW_OPTION_MASS_THRESHOLD`, currently 0.5). **No runtime behaves differently
+when it is set.** Deciding what an agent should do about weak support is a later
+question; this measures how often it happens first.
+
+### Readout temperature
+
+The direct readout runs at `temperature: 1`, and that is load-bearing. web-llm
+builds the reported `top_logprobs` from `softmax(logits / max(temperature,
+1e-6))` — the distribution it also samples from. At `temperature: 0` that clamp
+returns a one-hot vector: every decision reads 100% against 0%, and option mass
+degenerates into "was the argmax a label". At temperature 1 the numbers are the
+model's own next-token distribution. The sampled token is still discarded, so
+nothing about the decision is random.
+
+### Reports and artifacts
+
+A run produces a readable report and an **Export JSON** artifact:
+
+```json
+{
+  "environment": { "userAgent": "…", "gpu": {}, "engine": "webgpu" },
+  "model": { "modelId": "…", "revision": "…", "pinned": true },
+  "runtime": { "promptVersion": "…", "readoutTemperature": 1 },
+  "benchmark": { "summaries": [], "agreements": [] },
+  "results": [],
+  "probes": []
+}
+```
+
+Every row carries its own `promptSha256`, so a result can prove which prompt
+produced it. Artifacts belong in `benchmark/results/` — see the README there.
 
 ### Pinning the model
 
-`src/runtime/decisionModels.ts` is the one place that decides which weights the benchmark runs on.
-web-llm's prebuilt catalogue points at the `main` branch of the weight repository, so a model id
-alone does not pin anything, and OpenJev refuses a remote model without a 40-character commit
-revision for exactly that reason.
-
-Both entries currently ship with `revision: UNPINNED_REVISION` and the demo says so in the UI
-(`@ main (UNPINNED — results are not reproducible)`). Before recording a result, pin them:
+`src/runtime/decisionModels.ts` decides which weights the benchmark runs on.
+web-llm's prebuilt catalogue resolves weights from the repository's default
+branch, so a model id alone pins nothing, and OpenJev refuses a remote model
+without a 40-character commit revision for exactly that reason.
 
 ```bash
-curl -s https://huggingface.co/api/models/mlc-ai/Qwen3.5-4B-q4f16_1-MLC \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['sha'])"
+npm run pin:model            # write the current commit sha for each model
+npm run pin:model -- --check # fail if anything is still unpinned
 ```
 
-and put the sha in `revision`. The runtime then loads weights from
-`https://huggingface.co/{repo}/resolve/{revision}/` instead of the default branch. The WebGPU model
-library URL and the `@mlc-ai/web-llm` version are already pinned exactly.
+Until that runs, the demo and the report say
+`@ main (UNPINNED — results are not reproducible)` and the artifact records
+`"pinned": false`. The model library URL and the `@mlc-ai/web-llm` version are
+already pinned exactly.
+
+The benchmark model is `Qwen2.5-1.5B-Instruct-q4f16_1-MLC`: ~1.6 GB of VRAM,
+loads reliably, and is not a thinking model, so the generated arm produces an
+answer rather than a reasoning trace. `Qwen3.5-4B-q4f16_1-MLC` is offered as a
+second data point. Neither is a claim about which model is best for the job.
+
+### Testing the benchmark itself
+
+`/demo/benchmark.html?engine=stub` swaps the model for a deterministic fake
+(`demo/stubEngine.ts`) so the conditions, retrieval, report and export can be
+exercised on a machine that cannot download weights. Such a run is stamped
+`"engine": "stub"` and the page says in red that every number is fabricated. It
+tests the apparatus; it is never a result about a model.
 
 ## Development
 
@@ -162,8 +258,9 @@ library URL and the `@mlc-ai/web-llm` version are already pinned exactly.
 npm install
 npm run test
 npm run build
-npm run dev        # http://localhost:5173/demo/index.html
-npm run benchmark  # http://localhost:5173/demo/benchmark.html
+npm run dev          # http://localhost:5173/demo/index.html
+npm run benchmark    # http://localhost:5173/demo/benchmark.html
+npm run pin:model    # pin the model weights before recording a result
 ```
 
 Both demo pages need a WebGPU-capable browser; the first run downloads the model weights.

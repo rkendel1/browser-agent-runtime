@@ -60,6 +60,14 @@ export interface DecisionTrace {
    */
   optionMass?: number;
   /**
+   * Diagnostic marker: `optionMass` fell below `LOW_OPTION_MASS_THRESHOLD`.
+   *
+   * Nothing in this repository behaves differently when it is true. It exists
+   * so reports can count how often the phenomenon shows up, before anyone
+   * decides what an agent should do about it.
+   */
+  lowOptionMass?: boolean;
+  /**
    * Carried verbatim from OpenJev: these numbers rank the options against each
    * other under this prompt. They are not calibrated decision confidence.
    */
@@ -89,6 +97,34 @@ export class DecisionReadoutError extends Error {
 }
 
 export const DECISION_PROMPT_VERSION = "browser-direct-options-v1";
+
+/**
+ * Provisional reporting threshold for `lowOptionMass`.
+ *
+ * Chosen to bucket rows in a report, not to gate a decision: half the
+ * next-token mass going somewhere other than the option labels is enough to
+ * want a second look. It is not calibrated, and no runtime reads it to change
+ * what it returns.
+ */
+export const LOW_OPTION_MASS_THRESHOLD = 0.5;
+
+/**
+ * Temperature for the direct readout. It must be 1, and that is not a style
+ * choice.
+ *
+ * web-llm reports `top_logprobs` from the distribution it built for sampling:
+ * `softmax(logits / max(temperature, 1e-6))`. At `temperature: 0` that clamp
+ * turns the readout into a one-hot vector — every decision comes back at 100%
+ * against 0%, and option mass collapses to "was the argmax a label", which is
+ * not a measurement of anything. At temperature 1 the reported distribution is
+ * the model's own next-token distribution, which is what OpenJev reads off the
+ * raw logits.
+ *
+ * The sampled token is still discarded, so a non-zero temperature introduces no
+ * randomness into the decision: the softmax over the option labels is
+ * deterministic.
+ */
+export const DECISION_READOUT_TEMPERATURE = 1;
 
 export const DECISION_PROBABILITY_STATUS =
   "conditional option score; uncalibrated as decision confidence";

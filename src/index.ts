@@ -1,6 +1,7 @@
 export * from "./agent/AgentLoop";
 export * from "./agent/ContextDecision";
 export * from "./benchmark/DecisionBenchmark";
+export * from "./benchmark/DecisionReport";
 export * from "./context/ContextResolver";
 export * from "./context/ContextStore";
 export * from "./runtime/DecisionRuntime";
