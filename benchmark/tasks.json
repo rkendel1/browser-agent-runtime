@@ -1,0 +1,143 @@
+[
+  {
+    "id": "task-01",
+    "name": "30 day return policy",
+    "goal": "Find the return policy and tell me whether this product can be returned after 45 days.",
+    "expected": "No. The policy allows returns within 30 days.",
+    "pageHtml": "<!doctype html><html><head><title>TrailPack 22L Backpack</title></head><body><article><h1>TrailPack 22L Backpack</h1><p>Lightweight day pack for commuting and hiking.</p><h2>Shipping</h2><p>Orders ship within 2 business days.</p><h2>Return Policy</h2><p>Items may be returned within 30 days of delivery in original condition.</p><p>Final sale accessories cannot be returned.</p></article></body></html>"
+  },
+  {
+    "id": "task-02",
+    "name": "60 day return policy",
+    "goal": "Can this item be returned after 45 days?",
+    "expected": "Yes. The policy allows returns within 60 days.",
+    "pageHtml": "<!doctype html><html><head><title>Harbor Jacket</title></head><body><article><h1>Harbor Jacket</h1><h2>Care</h2><p>Machine wash cold.</p><h2>Returns</h2><p>You can send back unworn items within 60 days for a refund.</p></article></body></html>"
+  },
+  {
+    "id": "task-03",
+    "name": "Exchange only",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "No. The policy only allows exchanges within 45 days.",
+    "pageHtml": "<!doctype html><html><head><title>Northwind Boots</title></head><body><article><h1>Northwind Boots</h1><h2>Warranty</h2><p>One year limited warranty.</p><h2>Store Policy</h2><p>Products may be exchanged within 45 days, but refunds are not available.</p></article></body></html>"
+  },
+  {
+    "id": "task-04",
+    "name": "Holiday extension",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "Yes. Holiday orders can be returned within 75 days.",
+    "pageHtml": "<!doctype html><html><head><title>Holiday Candle Set</title></head><body><article><h1>Holiday Candle Set</h1><h2>Returns</h2><p>Standard returns are accepted within 30 days.</p><p>Orders placed between November 1 and December 31 may be returned within 75 days.</p></article></body></html>"
+  },
+  {
+    "id": "task-05",
+    "name": "No returns on clearance",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "No. Clearance items are final sale.",
+    "pageHtml": "<!doctype html><html><head><title>Clearance Gloves</title></head><body><article><h1>Clearance Gloves</h1><h2>Pricing</h2><p>Marked down 50%.</p><h2>Returns</h2><p>Clearance merchandise is final sale and cannot be returned.</p></article></body></html>"
+  },
+  {
+    "id": "task-06",
+    "name": "45 day exact cutoff",
+    "goal": "Can this item be returned after 45 days?",
+    "expected": "No. Returns are accepted for 45 days, not after.",
+    "pageHtml": "<!doctype html><html><head><title>Voyager Duffel</title></head><body><article><h1>Voyager Duffel</h1><h2>Return Policy</h2><p>Returns are accepted within 45 days of purchase with proof of purchase.</p></article></body></html>"
+  },
+  {
+    "id": "task-07",
+    "name": "90 day electronics",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "Yes. Electronics may be returned within 90 days.",
+    "pageHtml": "<!doctype html><html><head><title>PixelSound Earbuds</title></head><body><article><h1>PixelSound Earbuds</h1><h2>Support</h2><p>Includes live chat support.</p><h2>Return Policy</h2><p>Electronics may be returned within 90 days if all accessories are included.</p></article></body></html>"
+  },
+  {
+    "id": "task-08",
+    "name": "14 day accessories",
+    "goal": "Can this item be returned after 45 days?",
+    "expected": "No. Accessories can only be returned within 14 days.",
+    "pageHtml": "<!doctype html><html><head><title>Leather Watch Strap</title></head><body><article><h1>Leather Watch Strap</h1><h2>Returns</h2><p>Accessories can be returned within 14 days of delivery.</p></article></body></html>"
+  },
+  {
+    "id": "task-09",
+    "name": "Subscription no returns",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "No. Digital subscriptions are non-returnable.",
+    "pageHtml": "<!doctype html><html><head><title>PhotoPro Annual Plan</title></head><body><article><h1>PhotoPro Annual Plan</h1><h2>Billing</h2><p>Billed once per year.</p><h2>Refunds</h2><p>Digital subscription purchases are non-returnable after activation.</p></article></body></html>"
+  },
+  {
+    "id": "task-10",
+    "name": "120 day mattress trial",
+    "goal": "Can this mattress be returned after 45 days?",
+    "expected": "Yes. The trial lasts 120 days.",
+    "pageHtml": "<!doctype html><html><head><title>CloudRest Mattress</title></head><body><article><h1>CloudRest Mattress</h1><h2>Trial</h2><p>Sleep on it for up to 120 nights. Return it anytime during the trial for a full refund.</p></article></body></html>"
+  },
+  {
+    "id": "task-11",
+    "name": "30 day refurbished",
+    "goal": "Can this refurbished item be returned after 45 days?",
+    "expected": "No. Refurbished items must be returned within 30 days.",
+    "pageHtml": "<!doctype html><html><head><title>Refurbished Tablet</title></head><body><article><h1>Refurbished Tablet</h1><h2>Return Terms</h2><p>Refurbished devices may be returned within 30 days and must include the charger.</p></article></body></html>"
+  },
+  {
+    "id": "task-12",
+    "name": "55 day members",
+    "goal": "Can a member return this product after 45 days?",
+    "expected": "Yes. Members have 55 days to return it.",
+    "pageHtml": "<!doctype html><html><head><title>Member Exclusive Hoodie</title></head><body><article><h1>Member Exclusive Hoodie</h1><h2>Returns</h2><p>Standard customers have 30 days. Loyalty members have 55 days with their account receipt.</p></article></body></html>"
+  },
+  {
+    "id": "task-13",
+    "name": "Store credit only",
+    "goal": "Can this item be returned after 45 days?",
+    "expected": "Yes, but only for store credit within 60 days.",
+    "pageHtml": "<!doctype html><html><head><title>Summit Trail Poles</title></head><body><article><h1>Summit Trail Poles</h1><h2>Returns</h2><p>Items returned within 30 days receive a refund. Returns within 60 days receive store credit.</p></article></body></html>"
+  },
+  {
+    "id": "task-14",
+    "name": "Damaged items only",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "Only damaged items can be returned after 45 days.",
+    "pageHtml": "<!doctype html><html><head><title>Mirror Finish Desk Lamp</title></head><body><article><h1>Mirror Finish Desk Lamp</h1><h2>Return Policy</h2><p>Undamaged lamps can be returned within 30 days. Damaged or defective lamps may be returned within 90 days.</p></article></body></html>"
+  },
+  {
+    "id": "task-15",
+    "name": "Season pass transfer",
+    "goal": "Can this pass be returned after 45 days?",
+    "expected": "No. It may be transferred within 45 days but not returned.",
+    "pageHtml": "<!doctype html><html><head><title>Mountain Season Pass</title></head><body><article><h1>Mountain Season Pass</h1><h2>Policy</h2><p>Season passes are non-refundable. They may be transferred to another person within 45 days of purchase.</p></article></body></html>"
+  },
+  {
+    "id": "task-16",
+    "name": "Open box 15 day return",
+    "goal": "Can this item be returned after 45 days?",
+    "expected": "No. Open-box items only have 15 days for returns.",
+    "pageHtml": "<!doctype html><html><head><title>Open-Box Monitor</title></head><body><article><h1>Open-Box Monitor</h1><h2>Returns</h2><p>New monitors have 45 days. Open-box items have 15 days.</p></article></body></html>"
+  },
+  {
+    "id": "task-17",
+    "name": "Donation after return window",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "No. Unused items must be returned within 21 days.",
+    "pageHtml": "<!doctype html><html><head><title>Studio Yoga Mat</title></head><body><article><h1>Studio Yoga Mat</h1><h2>Returns</h2><p>Unused mats may be returned within 21 days. After that, eligible mats can be donated through our reuse program.</p></article></body></html>"
+  },
+  {
+    "id": "task-18",
+    "name": "Extended holiday window",
+    "goal": "Can this product be returned after 45 days?",
+    "expected": "Yes. Gifts purchased in December have until January 31 to be returned.",
+    "pageHtml": "<!doctype html><html><head><title>Giftable Tea Sampler</title></head><body><article><h1>Giftable Tea Sampler</h1><h2>Returns</h2><p>Regular returns are accepted within 30 days. Gifts purchased in December may be returned until January 31.</p></article></body></html>"
+  },
+  {
+    "id": "task-19",
+    "name": "Business accounts 75 days",
+    "goal": "Can this item be returned after 45 days on a business account?",
+    "expected": "Yes. Business accounts have a 75 day return window.",
+    "pageHtml": "<!doctype html><html><head><title>Office Ergonomic Chair</title></head><body><article><h1>Office Ergonomic Chair</h1><h2>Returns</h2><p>Consumers have 30 days. Business accounts have 75 days to return assembled chairs.</p></article></body></html>"
+  },
+  {
+    "id": "task-20",
+    "name": "Final sale custom order",
+    "goal": "Can this custom item be returned after 45 days?",
+    "expected": "No. Custom orders are final sale.",
+    "pageHtml": "<!doctype html><html><head><title>Custom Engraved Water Bottle</title></head><body><article><h1>Custom Engraved Water Bottle</h1><h2>Production</h2><p>Ships within 5 days.</p><h2>Returns</h2><p>Custom engraved items are final sale and cannot be returned.</p></article></body></html>"
+  }
+]
+
