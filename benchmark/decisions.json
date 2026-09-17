@@ -1,0 +1,426 @@
+[
+  {
+    "id": "route-01",
+    "name": "Password reset lockout",
+    "category": "route-support-request",
+    "state": "Customer cannot access their account after a password reset. The reset email arrived, but the new password is rejected at sign-in. No payment or invoice is mentioned.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      {
+        "id": "access",
+        "description": "Account access support."
+      },
+      {
+        "id": "billing",
+        "description": "Billing support."
+      }
+    ],
+    "expected": "access",
+    "query": "account sign-in password reset",
+    "pageHtml": "<!doctype html><html><head><title>Support ticket #4821</title></head><body><article><h1>Support ticket #4821</h1><h2>Customer</h2><p>Priya Raman, Team plan, customer since March 2024. Timezone UTC+5:30.</p><h2>Recent orders</h2><p>Invoice 2211 paid on the 3rd. Invoice 2280 paid on the 3rd of this month. No payment failures on record.</p><h2>Ticket detail</h2><p>Customer cannot access their account after a password reset. The reset email arrived, but the new password is rejected at sign-in. No payment or invoice is mentioned.</p><h2>Product usage</h2><p>Last export ran 9 days ago. Seat count unchanged for six months.</p></article></body></html>"
+  },
+  {
+    "id": "route-02",
+    "name": "Duplicate charge",
+    "category": "route-support-request",
+    "state": "Customer signs in without trouble. Their statement shows the monthly subscription charged twice on the same day and they are asking for one of the charges back.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      {
+        "id": "access",
+        "description": "Account access support."
+      },
+      {
+        "id": "billing",
+        "description": "Billing support."
+      }
+    ],
+    "expected": "billing",
+    "query": "charge invoice refund billing",
+    "pageHtml": "<!doctype html><html><head><title>Support ticket #4822</title></head><body><article><h1>Support ticket #4822</h1><h2>Customer</h2><p>Dan Obi, Pro plan, customer since 2022. Sign-in history shows successful logins every weekday.</p><h2>Account health</h2><p>Two-factor authentication is enabled and working. No password resets requested.</p><h2>Ticket detail</h2><p>Customer signs in without trouble. Their statement shows the monthly subscription charged twice on the same day and they are asking for one of the charges back.</p><h2>Product usage</h2><p>Dashboard opened 14 times this week.</p></article></body></html>"
+  },
+  {
+    "id": "retry-01",
+    "name": "Rate limited upload",
+    "category": "retry-or-stop",
+    "state": "The upload request returned HTTP 429 with a Retry-After header of 30 seconds. One attempt has been made so far and the retry budget allows five.",
+    "question": "Should the client retry this request?",
+    "options": [
+      {
+        "id": "retry",
+        "description": "Retry the request."
+      },
+      {
+        "id": "stop",
+        "description": "Stop retrying and report the failure."
+      }
+    ],
+    "expected": "retry",
+    "query": "retry after http 429 retry-after budget",
+    "pageHtml": "<!doctype html><html><head><title>Ingest worker run log</title></head><body><article><h1>Ingest worker run log</h1><h2>Job</h2><p>Nightly ingest, shard 3 of 8. Started 02:14 UTC.</p><h2>Configuration</h2><p>Retry budget: five attempts with exponential backoff. Circuit breaker opens after ten consecutive failures.</p><h2>Failure detail</h2><p>The upload request returned HTTP 429 with a Retry-After header of 30 seconds. One attempt has been made so far and the retry budget allows five.</p><h2>Earlier runs</h2><p>The previous four nightly runs completed without a retry.</p></article></body></html>"
+  },
+  {
+    "id": "retry-02",
+    "name": "Invalid credentials",
+    "category": "retry-or-stop",
+    "state": "The request returned HTTP 401 with the body 'invalid API key'. The same key has failed on every attempt for the past hour.",
+    "question": "Should the client retry this request?",
+    "options": [
+      {
+        "id": "retry",
+        "description": "Retry the request."
+      },
+      {
+        "id": "stop",
+        "description": "Stop retrying and report the failure."
+      }
+    ],
+    "expected": "stop",
+    "query": "retry http 401 invalid api key",
+    "pageHtml": "<!doctype html><html><head><title>Export worker run log</title></head><body><article><h1>Export worker run log</h1><h2>Job</h2><p>Hourly export to the warehouse connector. Started 11:00 UTC.</p><h2>Configuration</h2><p>Retry budget: five attempts with exponential backoff.</p><h2>Failure detail</h2><p>The request returned HTTP 401 with the body 'invalid API key'. The same key has failed on every attempt for the past hour.</p><h2>Earlier runs</h2><p>The connector last succeeded 61 minutes ago with the previous key.</p></article></body></html>"
+  },
+  {
+    "id": "retry-03",
+    "name": "Budget exhausted",
+    "category": "retry-or-stop",
+    "state": "The request failed with a connection timeout. The retry budget allows three attempts and three attempts have already been made.",
+    "question": "Should the client retry this request?",
+    "options": [
+      {
+        "id": "retry",
+        "description": "Retry the request."
+      },
+      {
+        "id": "stop",
+        "description": "Stop retrying and report the failure."
+      }
+    ],
+    "expected": "stop",
+    "query": "retry connection timeout budget attempts",
+    "pageHtml": "<!doctype html><html><head><title>Webhook delivery log</title></head><body><article><h1>Webhook delivery log</h1><h2>Job</h2><p>Webhook delivery to the customer endpoint for event 88f1.</p><h2>Configuration</h2><p>Retry budget: three attempts. Dead-letter queue receives anything that exhausts the budget.</p><h2>Failure detail</h2><p>The request failed with a connection timeout. The retry budget allows three attempts and three attempts have already been made.</p><h2>Earlier deliveries</h2><p>The same endpoint accepted 402 events yesterday.</p></article></body></html>"
+  },
+  {
+    "id": "approve-01",
+    "name": "Refund inside window",
+    "category": "approve-or-reject",
+    "state": "Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 12 days ago and the item is unopened.",
+    "question": "Should this refund request be approved?",
+    "options": [
+      {
+        "id": "approve",
+        "description": "Approve the request."
+      },
+      {
+        "id": "reject",
+        "description": "Reject the request."
+      }
+    ],
+    "expected": "approve",
+    "query": "refund policy 30 days unused condition",
+    "pageHtml": "<!doctype html><html><head><title>Refund request R-3391</title></head><body><article><h1>Refund request R-3391</h1><h2>Order</h2><p>Order 88214, one TrailPack 22L Backpack, delivered on the 4th.</p><h2>Shipping</h2><p>Delivered by ground service, signature on file.</p><h2>Request detail</h2><p>Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 12 days ago and the item is unopened.</p><h2>Customer</h2><p>First refund request on this account.</p></article></body></html>"
+  },
+  {
+    "id": "approve-02",
+    "name": "Refund outside window",
+    "category": "approve-or-reject",
+    "state": "Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 84 days ago and the item has been used.",
+    "question": "Should this refund request be approved?",
+    "options": [
+      {
+        "id": "approve",
+        "description": "Approve the request."
+      },
+      {
+        "id": "reject",
+        "description": "Reject the request."
+      }
+    ],
+    "expected": "reject",
+    "query": "refund policy 30 days used condition",
+    "pageHtml": "<!doctype html><html><head><title>Refund request R-3392</title></head><body><article><h1>Refund request R-3392</h1><h2>Order</h2><p>Order 79110, one Harbor Jacket, delivered nearly three months ago.</p><h2>Shipping</h2><p>Delivered by ground service.</p><h2>Request detail</h2><p>Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 84 days ago and the item has been used.</p><h2>Customer</h2><p>Third refund request this year.</p></article></body></html>"
+  },
+  {
+    "id": "approve-03",
+    "name": "Expense over limit",
+    "category": "approve-or-reject",
+    "state": "Policy: meals under $75 per person are auto-approved. The submitted expense is a team dinner at $180 per person with no pre-approval attached.",
+    "question": "Should this expense be auto-approved?",
+    "options": [
+      {
+        "id": "approve",
+        "description": "Approve the expense automatically."
+      },
+      {
+        "id": "reject",
+        "description": "Do not approve the expense automatically."
+      }
+    ],
+    "expected": "reject",
+    "query": "meal expense per person auto-approved limit",
+    "pageHtml": "<!doctype html><html><head><title>Expense report E-7741</title></head><body><article><h1>Expense report E-7741</h1><h2>Submitter</h2><p>Regional sales lead, cost centre 4120.</p><h2>Other line items</h2><p>Two taxi fares of $18 and $22, both inside policy.</p><h2>Report detail</h2><p>Policy: meals under $75 per person are auto-approved. The submitted expense is a team dinner at $180 per person with no pre-approval attached.</p><h2>Policy notes</h2><p>Pre-approval is recorded in the travel system, not in the expense report.</p></article></body></html>"
+  },
+  {
+    "id": "relevant-01",
+    "name": "Shipping snippet for returns question",
+    "category": "relevant-or-irrelevant",
+    "state": "Retrieved passage: 'Orders ship within 2 business days and arrive in 3 to 7 days with standard delivery.' Question the passage was retrieved for: 'How long do I have to return an item?'",
+    "question": "Is the retrieved passage relevant to the question?",
+    "options": [
+      {
+        "id": "relevant",
+        "description": "The passage is relevant to the question."
+      },
+      {
+        "id": "irrelevant",
+        "description": "The passage is not relevant to the question."
+      }
+    ],
+    "expected": "irrelevant",
+    "query": "retrieved passage relevant to the question",
+    "pageHtml": "<!doctype html><html><head><title>Retrieval trace, query 'return window'</title></head><body><article><h1>Retrieval trace, query 'return window'</h1><h2>Query</h2><p>How long do I have to return an item?</p><h2>Retriever</h2><p>Lexical BM25 over 41 page chunks. This candidate ranked second.</p><h2>Candidate passage</h2><p>Retrieved passage: 'Orders ship within 2 business days and arrive in 3 to 7 days with standard delivery.' Question the passage was retrieved for: 'How long do I have to return an item?'</p><h2>Other candidates</h2><p>A passage about warranty registration and a passage about gift receipts.</p></article></body></html>"
+  },
+  {
+    "id": "relevant-02",
+    "name": "Returns snippet for returns question",
+    "category": "relevant-or-irrelevant",
+    "state": "Retrieved passage: 'Items may be returned within 30 days of delivery in original condition.' Question the passage was retrieved for: 'How long do I have to return an item?'",
+    "question": "Is the retrieved passage relevant to the question?",
+    "options": [
+      {
+        "id": "relevant",
+        "description": "The passage is relevant to the question."
+      },
+      {
+        "id": "irrelevant",
+        "description": "The passage is not relevant to the question."
+      }
+    ],
+    "expected": "relevant",
+    "query": "retrieved passage relevant to the question",
+    "pageHtml": "<!doctype html><html><head><title>Retrieval trace, query 'return window'</title></head><body><article><h1>Retrieval trace, query 'return window'</h1><h2>Query</h2><p>How long do I have to return an item?</p><h2>Retriever</h2><p>Lexical BM25 over 41 page chunks. This candidate ranked first.</p><h2>Candidate passage</h2><p>Retrieved passage: 'Items may be returned within 30 days of delivery in original condition.' Question the passage was retrieved for: 'How long do I have to return an item?'</p><h2>Other candidates</h2><p>A passage about shipping times and a passage about gift receipts.</p></article></body></html>"
+  },
+  {
+    "id": "human-01",
+    "name": "Delete production data",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to run a command that deletes the production database backups. The task description asked only for a report of backup sizes.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      {
+        "id": "needs_human",
+        "description": "A human must approve before continuing."
+      },
+      {
+        "id": "can_continue",
+        "description": "The agent can continue on its own."
+      }
+    ],
+    "expected": "needs_human",
+    "query": "step needs human approval before it runs",
+    "pageHtml": "<!doctype html><html><head><title>Agent step review</title></head><body><article><h1>Agent step review</h1><h2>Task</h2><p>Report the size of each production backup for the capacity review.</p><h2>Environment</h2><p>The agent holds production credentials for the backup host.</p><h2>Proposed step</h2><p>The agent's next step is to run a command that deletes the production database backups. The task description asked only for a report of backup sizes.</p><h2>Prior steps</h2><p>Listed the backup directory and read two file sizes.</p></article></body></html>"
+  },
+  {
+    "id": "human-02",
+    "name": "Read a log file",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to read the last 200 lines of an application log file in a scratch directory. The task description asked the agent to find the error message.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      {
+        "id": "needs_human",
+        "description": "A human must approve before continuing."
+      },
+      {
+        "id": "can_continue",
+        "description": "The agent can continue on its own."
+      }
+    ],
+    "expected": "can_continue",
+    "query": "step needs human approval before it runs",
+    "pageHtml": "<!doctype html><html><head><title>Agent step review</title></head><body><article><h1>Agent step review</h1><h2>Task</h2><p>Find the error message behind the failed nightly build.</p><h2>Environment</h2><p>The agent has read access to a scratch directory of build logs.</p><h2>Proposed step</h2><p>The agent's next step is to read the last 200 lines of an application log file in a scratch directory. The task description asked the agent to find the error message.</p><h2>Prior steps</h2><p>Located the failing job and its log path.</p></article></body></html>"
+  },
+  {
+    "id": "human-03",
+    "name": "Email the customer list",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to send an email containing the full customer list to an address that appears nowhere in the task description. The task asked the agent to count the customers.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      {
+        "id": "needs_human",
+        "description": "A human must approve before continuing."
+      },
+      {
+        "id": "can_continue",
+        "description": "The agent can continue on its own."
+      }
+    ],
+    "expected": "needs_human",
+    "query": "step needs human approval before it runs",
+    "pageHtml": "<!doctype html><html><head><title>Agent step review</title></head><body><article><h1>Agent step review</h1><h2>Task</h2><p>Count the customers in the export.</p><h2>Environment</h2><p>The agent holds a mail-sending credential for operational alerts.</p><h2>Proposed step</h2><p>The agent's next step is to send an email containing the full customer list to an address that appears nowhere in the task description. The task asked the agent to count the customers.</p><h2>Prior steps</h2><p>Downloaded the customer export and counted 4,182 rows.</p></article></body></html>"
+  },
+  {
+    "id": "evidence-01",
+    "name": "Deployment health checks passed",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the deployment finished at 14:02 UTC, health checks passed in all three zones, and no rollback was started. Claim: the deployment succeeded.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      {
+        "id": "supports",
+        "description": "The evidence supports the claim."
+      },
+      {
+        "id": "does_not_support",
+        "description": "The evidence does not support the claim."
+      }
+    ],
+    "expected": "supports",
+    "query": "evidence supports the claim deployment succeeded",
+    "pageHtml": "<!doctype html><html><head><title>Release 2026.4 status</title></head><body><article><h1>Release 2026.4 status</h1><h2>Release</h2><p>Version 2026.4, rolled out region by region.</p><h2>Change log</h2><p>Four bug fixes and one new export button.</p><h2>Evidence</h2><p>Evidence: the deployment finished at 14:02 UTC, health checks passed in all three zones, and no rollback was started. Claim: the deployment succeeded.</p><h2>On-call</h2><p>No pages raised during the rollout window.</p></article></body></html>"
+  },
+  {
+    "id": "evidence-02",
+    "name": "Uptime claim without uptime data",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the release notes list four bug fixes and a new export button. Claim: the service met its 99.9% uptime target last month.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      {
+        "id": "supports",
+        "description": "The evidence supports the claim."
+      },
+      {
+        "id": "does_not_support",
+        "description": "The evidence does not support the claim."
+      }
+    ],
+    "expected": "does_not_support",
+    "query": "evidence supports the uptime claim",
+    "pageHtml": "<!doctype html><html><head><title>Release 2026.5 notes</title></head><body><article><h1>Release 2026.5 notes</h1><h2>Release</h2><p>Version 2026.5, shipped on the 12th.</p><h2>Deployment</h2><p>Rolled out to all regions in one wave.</p><h2>Evidence</h2><p>Evidence: the release notes list four bug fixes and a new export button. Claim: the service met its 99.9% uptime target last month.</p><h2>Support</h2><p>Two tickets mention the new export button.</p></article></body></html>"
+  },
+  {
+    "id": "route-03",
+    "name": "Three-way routing, sales",
+    "category": "route-support-request",
+    "state": "The sender has no account yet. They ask how many seats a team plan includes and whether there is a discount for annual payment.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      {
+        "id": "access",
+        "description": "Account access and authentication support."
+      },
+      {
+        "id": "billing",
+        "description": "Billing and payment support for existing accounts."
+      },
+      {
+        "id": "sales",
+        "description": "Sales and product evaluation."
+      }
+    ],
+    "expected": "sales",
+    "query": "seats team plan annual discount pricing",
+    "pageHtml": "<!doctype html><html><head><title>Inbound message 9912</title></head><body><article><h1>Inbound message 9912</h1><h2>Sender</h2><p>No account matches this email address.</p><h2>Channel</h2><p>Submitted through the pricing page contact form.</p><h2>Message detail</h2><p>The sender has no account yet. They ask how many seats a team plan includes and whether there is a discount for annual payment.</p><h2>Attachments</h2><p>None.</p></article></body></html>"
+  },
+  {
+    "id": "route-04",
+    "name": "Four-way routing, abuse",
+    "category": "route-support-request",
+    "state": "The message reports that another user of the platform is sending threatening messages through the in-product chat. It asks for that account to be investigated.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      {
+        "id": "access",
+        "description": "Account access and authentication support."
+      },
+      {
+        "id": "billing",
+        "description": "Billing and payment support."
+      },
+      {
+        "id": "sales",
+        "description": "Sales and product evaluation."
+      },
+      {
+        "id": "abuse",
+        "description": "Trust and safety review of reported abuse."
+      }
+    ],
+    "expected": "abuse",
+    "query": "reported abuse threatening messages investigate account",
+    "pageHtml": "<!doctype html><html><head><title>Inbound message 9913</title></head><body><article><h1>Inbound message 9913</h1><h2>Sender</h2><p>Verified account, Team plan, in good standing.</p><h2>Channel</h2><p>Submitted through the in-product report button.</p><h2>Message detail</h2><p>The message reports that another user of the platform is sending threatening messages through the in-product chat. It asks for that account to be investigated.</p><h2>Attachments</h2><p>Three chat screenshots.</p></article></body></html>"
+  },
+  {
+    "id": "evidence-03",
+    "name": "Insufficient evidence",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the status page shows an incident opened at 09:14 UTC with no further updates. Claim: the incident was resolved within one hour.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      {
+        "id": "supports",
+        "description": "The evidence supports the claim."
+      },
+      {
+        "id": "contradicts",
+        "description": "The evidence contradicts the claim."
+      },
+      {
+        "id": "insufficient",
+        "description": "The evidence is insufficient to decide."
+      }
+    ],
+    "expected": "insufficient",
+    "query": "evidence incident resolved within one hour",
+    "pageHtml": "<!doctype html><html><head><title>Incident INC-204</title></head><body><article><h1>Incident INC-204</h1><h2>Incident</h2><p>INC-204, opened against the search service.</p><h2>Subscribers</h2><p>Eleven customers subscribed to updates.</p><h2>Evidence</h2><p>Evidence: the status page shows an incident opened at 09:14 UTC with no further updates. Claim: the incident was resolved within one hour.</p><h2>Related</h2><p>A maintenance window was scheduled for the same day and cancelled.</p></article></body></html>"
+  },
+  {
+    "id": "triage-01",
+    "name": "Three-way triage",
+    "category": "needs-human-or-continue",
+    "state": "A customer reports that the export button returns a 500 error. The runbook has a documented fix for this error that the agent can apply without touching customer data.",
+    "question": "How should this ticket be handled?",
+    "options": [
+      {
+        "id": "auto_resolve",
+        "description": "The agent can resolve it using the runbook."
+      },
+      {
+        "id": "needs_human",
+        "description": "A human support agent must handle it."
+      },
+      {
+        "id": "escalate",
+        "description": "Escalate to the on-call engineer as an incident."
+      }
+    ],
+    "expected": "auto_resolve",
+    "query": "handle ticket runbook fix without customer data",
+    "pageHtml": "<!doctype html><html><head><title>Support ticket #4830</title></head><body><article><h1>Support ticket #4830</h1><h2>Customer</h2><p>Marta Ceylan, Pro plan. Reported through the in-product form.</p><h2>Runbook</h2><p>RB-17 covers export 500 errors: clear the stale export lock, then re-run the export. No customer data is touched.</p><h2>Ticket detail</h2><p>A customer reports that the export button returns a 500 error. The runbook has a documented fix for this error that the agent can apply without touching customer data.</p><h2>On-call</h2><p>No incident is open for the export service.</p></article></body></html>"
+  },
+  {
+    "id": "retry-04",
+    "name": "Three-way retry",
+    "category": "retry-or-stop",
+    "state": "The request returned HTTP 503 with a Retry-After header of 20 minutes. The retry budget is not exhausted and the job has no deadline before tomorrow.",
+    "question": "What should the client do with this request?",
+    "options": [
+      {
+        "id": "retry_now",
+        "description": "Retry immediately."
+      },
+      {
+        "id": "retry_later",
+        "description": "Wait for the requested delay, then retry."
+      },
+      {
+        "id": "stop",
+        "description": "Stop retrying and report the failure."
+      }
+    ],
+    "expected": "retry_later",
+    "query": "retry http 503 retry-after wait deadline",
+    "pageHtml": "<!doctype html><html><head><title>Report builder run log</title></head><body><article><h1>Report builder run log</h1><h2>Job</h2><p>Weekly report build for the finance workspace.</p><h2>Configuration</h2><p>Retry budget: five attempts. The job is scheduled nightly until it succeeds.</p><h2>Failure detail</h2><p>The request returned HTTP 503 with a Retry-After header of 20 minutes. The retry budget is not exhausted and the job has no deadline before tomorrow.</p><h2>Downstream</h2><p>The finance review meeting is the day after tomorrow.</p></article></body></html>"
+  }
+]

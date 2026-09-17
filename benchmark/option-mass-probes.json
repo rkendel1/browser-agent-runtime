@@ -1,0 +1,68 @@
+[
+  {
+    "id": "probe-unrelated-state",
+    "name": "State says nothing about the question",
+    "why": "The evidence is about shipping; the question is about warranty length. Neither option is supported by anything in the state.",
+    "state": "Orders ship within 2 business days. Standard delivery arrives in 3 to 7 days. Expedited delivery is available at checkout.",
+    "question": "Is the warranty longer than two years?",
+    "options": [
+      { "id": "yes", "description": "The warranty is longer than two years." },
+      { "id": "no", "description": "The warranty is two years or shorter." }
+    ]
+  },
+  {
+    "id": "probe-empty-state",
+    "name": "No evidence at all",
+    "why": "The state carries no information, so the answer slot has nothing to condition on.",
+    "state": "No data was retrieved for this request.",
+    "question": "Should the refund be approved?",
+    "options": [
+      { "id": "approve", "description": "Approve the refund." },
+      { "id": "reject", "description": "Reject the refund." }
+    ]
+  },
+  {
+    "id": "probe-both-true",
+    "name": "Both options are true",
+    "why": "The state supports both options equally, so the mass that lands on either label is arbitrary.",
+    "state": "The customer reports both a billing error on last month's invoice and that they cannot sign in after a password reset.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access support." },
+      { "id": "billing", "description": "Billing support." }
+    ]
+  },
+  {
+    "id": "probe-neither-applies",
+    "name": "Neither option applies",
+    "why": "The correct answer is not on the list, so any mass on a label is the model settling for the least wrong letter.",
+    "state": "The customer is asking which of two competitor products integrates better with their warehouse.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access support." },
+      { "id": "billing", "description": "Billing support." }
+    ]
+  },
+  {
+    "id": "probe-question-invites-prose",
+    "name": "A question that invites an explanation",
+    "why": "An open 'why' question pulls the answer slot toward a word rather than a label, which is exactly the case option mass is meant to catch.",
+    "state": "The nightly job failed at 02:14 UTC with a connection timeout after three attempts.",
+    "question": "Why did the nightly job fail, and what should happen next?",
+    "options": [
+      { "id": "retry", "description": "Retry the job." },
+      { "id": "stop", "description": "Stop and report the failure." }
+    ]
+  },
+  {
+    "id": "probe-contradictory-state",
+    "name": "Evidence contradicts itself",
+    "why": "The state asserts both outcomes, so neither label has stable support.",
+    "state": "The deployment log records 'rollout complete, all health checks passed' at 14:02 and 'rollback initiated, health checks failing' at 14:02.",
+    "question": "Does the evidence support the claim that the deployment succeeded?",
+    "options": [
+      { "id": "supports", "description": "The evidence supports the claim." },
+      { "id": "does_not_support", "description": "The evidence does not support the claim." }
+    ]
+  }
+]

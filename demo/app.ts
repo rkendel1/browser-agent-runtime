@@ -1,4 +1,5 @@
 import { AgentLoop, type AgentTraceEntry, type ContextMode, WebLLMRuntime, getPage } from "../src";
+import { initializeDecisionPanel } from "./decision";
 import benchmarkTasksData from "../benchmark/tasks.json";
 import DOMPurify from "dompurify";
 
@@ -51,6 +52,7 @@ async function initialize(): Promise<void> {
   });
 
   loadTask(benchmarkTasks[0]?.id);
+  initializeDecisionPanel(() => pageInput.value);
 }
 
 function loadTask(taskId: string | undefined): void {

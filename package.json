@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open /demo/index.html",
+    "benchmark": "vite --open /demo/benchmark.html",
+    "pin:model": "node scripts/pin-model.mjs",
     "build": "tsc && vite build",
     "test": "vitest run"
   },
   "dependencies": {
-    "@mlc-ai/web-llm": "^0.2.85",
+    "@mlc-ai/web-llm": "0.2.85",
     "dompurify": "^3.2.7"
   },
   "devDependencies": {
