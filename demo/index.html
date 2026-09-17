@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>browser-agent-runtime demo</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, system-ui, sans-serif;
+        line-height: 1.5;
+      }
+
+      body {
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      .layout {
+        display: grid;
+        gap: 24px;
+        padding: 24px;
+        grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      }
+
+      .panel {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      label,
+      legend {
+        font-weight: 600;
+      }
+
+      textarea,
+      input,
+      select,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: #020617;
+        color: inherit;
+        padding: 10px 12px;
+        margin-top: 8px;
+        margin-bottom: 16px;
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        background: #2563eb;
+      }
+
+      fieldset {
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 12px;
+        margin: 0 0 16px;
+        padding: 12px;
+      }
+
+      .radio-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .radio-row label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+      }
+
+      .trace {
+        display: grid;
+        gap: 12px;
+      }
+
+      .trace-step {
+        border-radius: 12px;
+        padding: 14px;
+        background: #111827;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+      }
+
+      .trace-step strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #93c5fd;
+      }
+
+      .stats {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        margin-bottom: 20px;
+      }
+
+      .stat {
+        border-radius: 12px;
+        padding: 12px;
+        background: #111827;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+      }
+
+      .muted {
+        color: #94a3b8;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <section class="panel">
+        <h1>browser-agent-runtime</h1>
+        <p class="muted">
+          Run a small local browser model with either the full page or retrieved context only.
+        </p>
+        <label for="task-select">Benchmark task</label>
+        <select id="task-select"></select>
+
+        <label for="goal-input">Task</label>
+        <textarea id="goal-input" rows="3"></textarea>
+
+        <fieldset>
+          <legend>Context</legend>
+          <div class="radio-row">
+            <label><input type="radio" name="context-mode" value="entire-page" /> Entire page</label>
+            <label
+              ><input type="radio" name="context-mode" value="retrieved-context" checked /> Retrieved
+              context</label
+            >
+          </div>
+        </fieldset>
+
+        <label for="model-input">Model</label>
+        <input id="model-input" value="Llama-3.2-3B-Instruct-q4f32_1-MLC" />
+
+        <label for="page-input">Web page HTML</label>
+        <textarea id="page-input" rows="18"></textarea>
+
+        <button id="run-button">Run task</button>
+        <p id="status" class="muted"></p>
+      </section>
+
+      <section class="panel">
+        <div class="stats">
+          <div class="stat"><strong>Model</strong><div id="model-stat">—</div></div>
+          <div class="stat"><strong>Context</strong><div id="context-stat">—</div></div>
+          <div class="stat"><strong>Retrieved tokens</strong><div id="token-stat">—</div></div>
+        </div>
+
+        <h2>Trace</h2>
+        <div id="trace" class="trace"></div>
+      </section>
+    </div>
+
+    <script type="module" src="./app.ts"></script>
+  </body>
+</html>
+
