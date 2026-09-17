@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>decision benchmark</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, system-ui, sans-serif;
+        line-height: 1.5;
+      }
+
+      body {
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 24px;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .panel {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      select,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: #020617;
+        color: inherit;
+        padding: 10px 12px;
+        margin: 8px 0 16px;
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        background: #2563eb;
+      }
+
+      .controls {
+        display: grid;
+        gap: 0 24px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      }
+
+      th {
+        color: #93c5fd;
+      }
+
+      .muted {
+        color: #94a3b8;
+      }
+
+      .wrong {
+        color: #fca5a5;
+      }
+
+      pre {
+        border-radius: 12px;
+        padding: 14px;
+        background: #111827;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        overflow-x: auto;
+        font-size: 13px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Decision benchmark</h1>
+        <p class="muted">
+          The same model and the same 20 fixtures, taken twice: once by generating an answer and
+          parsing it, once by reading the option-token logits directly.
+          <a href="./index.html">← Back to the demo</a>
+        </p>
+
+        <div class="controls">
+          <div>
+            <label for="benchmark-model">Model</label>
+            <select id="benchmark-model"></select>
+          </div>
+          <div>
+            <label for="benchmark-paths">Paths</label>
+            <select id="benchmark-paths">
+              <option value="both">Generated and direct logits</option>
+              <option value="direct">Direct logits only</option>
+              <option value="generated">Generated only</option>
+            </select>
+          </div>
+          <div>
+            <label for="benchmark-limit">Fixtures</label>
+            <select id="benchmark-limit">
+              <option value="20">All 20</option>
+              <option value="5">First 5</option>
+              <option value="1">First 1</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="benchmark-run">Run benchmark</button>
+        <p id="benchmark-status" class="muted">
+          Both paths load the same model, so the first run downloads weights once.
+        </p>
+        <p id="benchmark-pin" class="muted"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Results</h2>
+        <div id="benchmark-summary"></div>
+        <h2>Per fixture</h2>
+        <div id="benchmark-rows"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Report</h2>
+        <pre id="benchmark-report">Run the benchmark to produce a report.</pre>
+      </section>
+    </main>
+
+    <script type="module" src="./benchmark.ts"></script>
+  </body>
+</html>

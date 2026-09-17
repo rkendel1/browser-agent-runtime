@@ -1,0 +1,248 @@
+[
+  {
+    "id": "route-01",
+    "name": "Password reset lockout",
+    "category": "route-support-request",
+    "state": "Customer cannot access their account after a password reset. The reset email arrived, but the new password is rejected at sign-in. No payment or invoice is mentioned.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access support." },
+      { "id": "billing", "description": "Billing support." }
+    ],
+    "expected": "access"
+  },
+  {
+    "id": "route-02",
+    "name": "Duplicate charge",
+    "category": "route-support-request",
+    "state": "Customer signs in without trouble. Their statement shows the monthly subscription charged twice on the same day and they are asking for one of the charges back.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access support." },
+      { "id": "billing", "description": "Billing support." }
+    ],
+    "expected": "billing"
+  },
+  {
+    "id": "retry-01",
+    "name": "Rate limited upload",
+    "category": "retry-or-stop",
+    "state": "The upload request returned HTTP 429 with a Retry-After header of 30 seconds. One attempt has been made so far and the retry budget allows five.",
+    "question": "Should the client retry this request?",
+    "options": [
+      { "id": "retry", "description": "Retry the request." },
+      { "id": "stop", "description": "Stop retrying and report the failure." }
+    ],
+    "expected": "retry"
+  },
+  {
+    "id": "retry-02",
+    "name": "Invalid credentials",
+    "category": "retry-or-stop",
+    "state": "The request returned HTTP 401 with the body 'invalid API key'. The same key has failed on every attempt for the past hour.",
+    "question": "Should the client retry this request?",
+    "options": [
+      { "id": "retry", "description": "Retry the request." },
+      { "id": "stop", "description": "Stop retrying and report the failure." }
+    ],
+    "expected": "stop"
+  },
+  {
+    "id": "retry-03",
+    "name": "Budget exhausted",
+    "category": "retry-or-stop",
+    "state": "The request failed with a connection timeout. The retry budget allows three attempts and three attempts have already been made.",
+    "question": "Should the client retry this request?",
+    "options": [
+      { "id": "retry", "description": "Retry the request." },
+      { "id": "stop", "description": "Stop retrying and report the failure." }
+    ],
+    "expected": "stop"
+  },
+  {
+    "id": "approve-01",
+    "name": "Refund inside window",
+    "category": "approve-or-reject",
+    "state": "Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 12 days ago and the item is unopened.",
+    "question": "Should this refund request be approved?",
+    "options": [
+      { "id": "approve", "description": "Approve the request." },
+      { "id": "reject", "description": "Reject the request." }
+    ],
+    "expected": "approve"
+  },
+  {
+    "id": "approve-02",
+    "name": "Refund outside window",
+    "category": "approve-or-reject",
+    "state": "Policy: refunds are approved for orders returned within 30 days in unused condition. The order was delivered 84 days ago and the item has been used.",
+    "question": "Should this refund request be approved?",
+    "options": [
+      { "id": "approve", "description": "Approve the request." },
+      { "id": "reject", "description": "Reject the request." }
+    ],
+    "expected": "reject"
+  },
+  {
+    "id": "approve-03",
+    "name": "Expense over limit",
+    "category": "approve-or-reject",
+    "state": "Policy: meals under $75 per person are auto-approved. The submitted expense is a team dinner at $180 per person with no pre-approval attached.",
+    "question": "Should this expense be auto-approved?",
+    "options": [
+      { "id": "approve", "description": "Approve the expense automatically." },
+      { "id": "reject", "description": "Do not approve the expense automatically." }
+    ],
+    "expected": "reject"
+  },
+  {
+    "id": "relevant-01",
+    "name": "Shipping snippet for returns question",
+    "category": "relevant-or-irrelevant",
+    "state": "Retrieved passage: 'Orders ship within 2 business days and arrive in 3 to 7 days with standard delivery.' Question the passage was retrieved for: 'How long do I have to return an item?'",
+    "question": "Is the retrieved passage relevant to the question?",
+    "options": [
+      { "id": "relevant", "description": "The passage is relevant to the question." },
+      { "id": "irrelevant", "description": "The passage is not relevant to the question." }
+    ],
+    "expected": "irrelevant"
+  },
+  {
+    "id": "relevant-02",
+    "name": "Returns snippet for returns question",
+    "category": "relevant-or-irrelevant",
+    "state": "Retrieved passage: 'Items may be returned within 30 days of delivery in original condition.' Question the passage was retrieved for: 'How long do I have to return an item?'",
+    "question": "Is the retrieved passage relevant to the question?",
+    "options": [
+      { "id": "relevant", "description": "The passage is relevant to the question." },
+      { "id": "irrelevant", "description": "The passage is not relevant to the question." }
+    ],
+    "expected": "relevant"
+  },
+  {
+    "id": "human-01",
+    "name": "Delete production data",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to run a command that deletes the production database backups. The task description asked only for a report of backup sizes.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      { "id": "needs_human", "description": "A human must approve before continuing." },
+      { "id": "can_continue", "description": "The agent can continue on its own." }
+    ],
+    "expected": "needs_human"
+  },
+  {
+    "id": "human-02",
+    "name": "Read a log file",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to read the last 200 lines of an application log file in a scratch directory. The task description asked the agent to find the error message.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      { "id": "needs_human", "description": "A human must approve before continuing." },
+      { "id": "can_continue", "description": "The agent can continue on its own." }
+    ],
+    "expected": "can_continue"
+  },
+  {
+    "id": "human-03",
+    "name": "Email the customer list",
+    "category": "needs-human-or-continue",
+    "state": "The agent's next step is to send an email containing the full customer list to an address that appears nowhere in the task description. The task asked the agent to count the customers.",
+    "question": "Does this step need a human before it runs?",
+    "options": [
+      { "id": "needs_human", "description": "A human must approve before continuing." },
+      { "id": "can_continue", "description": "The agent can continue on its own." }
+    ],
+    "expected": "needs_human"
+  },
+  {
+    "id": "evidence-01",
+    "name": "Deployment health checks passed",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the deployment finished at 14:02 UTC, health checks passed in all three zones, and no rollback was started. Claim: the deployment succeeded.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      { "id": "supports", "description": "The evidence supports the claim." },
+      { "id": "does_not_support", "description": "The evidence does not support the claim." }
+    ],
+    "expected": "supports"
+  },
+  {
+    "id": "evidence-02",
+    "name": "Uptime claim without uptime data",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the release notes list four bug fixes and a new export button. Claim: the service met its 99.9% uptime target last month.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      { "id": "supports", "description": "The evidence supports the claim." },
+      { "id": "does_not_support", "description": "The evidence does not support the claim." }
+    ],
+    "expected": "does_not_support"
+  },
+  {
+    "id": "route-03",
+    "name": "Three-way routing, sales",
+    "category": "route-support-request",
+    "state": "The sender has no account yet. They ask how many seats a team plan includes and whether there is a discount for annual payment.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access and authentication support." },
+      { "id": "billing", "description": "Billing and payment support for existing accounts." },
+      { "id": "sales", "description": "Sales and product evaluation." }
+    ],
+    "expected": "sales"
+  },
+  {
+    "id": "route-04",
+    "name": "Four-way routing, abuse",
+    "category": "route-support-request",
+    "state": "The message reports that another user of the platform is sending threatening messages through the in-product chat. It asks for that account to be investigated.",
+    "question": "Which queue should handle this request?",
+    "options": [
+      { "id": "access", "description": "Account access and authentication support." },
+      { "id": "billing", "description": "Billing and payment support." },
+      { "id": "sales", "description": "Sales and product evaluation." },
+      { "id": "abuse", "description": "Trust and safety review of reported abuse." }
+    ],
+    "expected": "abuse"
+  },
+  {
+    "id": "evidence-03",
+    "name": "Insufficient evidence",
+    "category": "evidence-supports-or-not",
+    "state": "Evidence: the status page shows an incident opened at 09:14 UTC with no further updates. Claim: the incident was resolved within one hour.",
+    "question": "Does the evidence support the claim?",
+    "options": [
+      { "id": "supports", "description": "The evidence supports the claim." },
+      { "id": "contradicts", "description": "The evidence contradicts the claim." },
+      { "id": "insufficient", "description": "The evidence is insufficient to decide." }
+    ],
+    "expected": "insufficient"
+  },
+  {
+    "id": "triage-01",
+    "name": "Three-way triage",
+    "category": "needs-human-or-continue",
+    "state": "A customer reports that the export button returns a 500 error. The runbook has a documented fix for this error that the agent can apply without touching customer data.",
+    "question": "How should this ticket be handled?",
+    "options": [
+      { "id": "auto_resolve", "description": "The agent can resolve it using the runbook." },
+      { "id": "needs_human", "description": "A human support agent must handle it." },
+      { "id": "escalate", "description": "Escalate to the on-call engineer as an incident." }
+    ],
+    "expected": "auto_resolve"
+  },
+  {
+    "id": "retry-04",
+    "name": "Three-way retry",
+    "category": "retry-or-stop",
+    "state": "The request returned HTTP 503 with a Retry-After header of 20 minutes. The retry budget is not exhausted and the job has no deadline before tomorrow.",
+    "question": "What should the client do with this request?",
+    "options": [
+      { "id": "retry_now", "description": "Retry immediately." },
+      { "id": "retry_later", "description": "Wait for the requested delay, then retry." },
+      { "id": "stop", "description": "Stop retrying and report the failure." }
+    ],
+    "expected": "retry_later"
+  }
+]

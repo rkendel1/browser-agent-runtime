@@ -1,8 +1,13 @@
 export * from "./agent/AgentLoop";
+export * from "./agent/ContextDecision";
+export * from "./benchmark/DecisionBenchmark";
 export * from "./context/ContextResolver";
 export * from "./context/ContextStore";
+export * from "./runtime/DecisionRuntime";
+export * from "./runtime/GeneratedDecisionRuntime";
 export * from "./runtime/ModelRuntime";
+export * from "./runtime/WebLLMDecisionRuntime";
 export * from "./runtime/WebLLMRuntime";
+export * from "./runtime/decisionModels";
 export * from "./tools/getPage";
 export * from "./tools/searchContext";
-
