@@ -11,13 +11,18 @@ import {
   promptDigest,
   DecisionReadoutError,
   type DecisionInput,
+  type DecisionProvenance,
   type DecisionResult,
   type DecisionRuntime,
 } from "./DecisionRuntime";
 
 export interface GeneratedDecisionRuntimeOptions {
   model?: string;
+  modelRevision?: string;
   execution?: string;
+  runtime?: string;
+  runtimeVersion?: string;
+  decisionSchemaRevision?: string;
 }
 
 /**
@@ -53,6 +58,15 @@ export class GeneratedDecisionRuntime implements DecisionRuntime {
     const latencyMs = now() - startedAt;
 
     const selected = parseSelectedOption(answer, input);
+    const provenance: DecisionProvenance = {
+      runtime: this.options.runtime ?? "generated-decision-runtime",
+      runtimeVersion: this.options.runtimeVersion ?? "unknown",
+      model: this.options.model ?? "unknown",
+      modelRevision: this.options.modelRevision ?? "unavailable",
+      executionMethod: "generated",
+      promptRevision: DECISION_PROMPT_VERSION,
+      decisionSchemaRevision: this.options.decisionSchemaRevision ?? "decision-v1",
+    };
     const probabilities: Record<string, number> = {};
     for (const option of input.options) {
       probabilities[option.id] = option.id === selected ? 1 : 0;
@@ -76,6 +90,7 @@ export class GeneratedDecisionRuntime implements DecisionRuntime {
         promptVersion: DECISION_PROMPT_VERSION,
         promptSha256: await promptDigest(prompt),
         prompt,
+        provenance,
       },
     };
   }
