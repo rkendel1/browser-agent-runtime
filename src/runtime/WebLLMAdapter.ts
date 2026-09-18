@@ -63,8 +63,10 @@ export class WebLLMAdapter implements LocalLLMAdapter {
   private enginePromise?: Promise<WebLLMDecisionEngine>;
   private gpu?: string;
   private readonly modelId: string;
+  private readonly options: WebLLMAdapterOptions;
 
-  constructor(private readonly options: WebLLMAdapterOptions = {}) {
+  constructor(options: WebLLMAdapterOptions = {}) {
+    this.options = options;
     this.modelId = options.model ?? BENCHMARK_DECISION_MODEL.modelId;
   }
 

@@ -34,11 +34,13 @@ export interface LocalLLMDecisionRuntimeOptions {
 export class LocalLLMDecisionRuntime implements DecisionRuntime {
   readonly capabilities: DecisionRuntimeCapabilities;
   private readonly options: LocalLLMDecisionRuntimeOptions;
+  private readonly adapter: LocalLLMAdapter;
 
   constructor(
-    private readonly adapter: LocalLLMAdapter,
+    adapter: LocalLLMAdapter,
     options: LocalLLMDecisionRuntimeOptions = {},
   ) {
+    this.adapter = adapter;
     this.options = options;
     this.capabilities = adapter.capabilities;
   }

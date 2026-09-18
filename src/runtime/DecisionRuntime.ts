@@ -153,7 +153,11 @@ export function encodeCandidateLabels(options: readonly string[]): Map<string, s
 }
 
 export class DecisionBatch {
-  constructor(private readonly runtime: DecisionRuntime) {}
+  private readonly runtime: DecisionRuntime;
+
+  constructor(runtime: DecisionRuntime) {
+    this.runtime = runtime;
+  }
 
   decide(inputs: readonly DecisionInput[]): Promise<DecisionResult[]> {
     return Promise.all(inputs.map((input) => this.runtime.decide(input)));
