@@ -62,6 +62,9 @@ export class LocalLLMDecisionRuntime implements DecisionRuntime {
       input.options,
       response.candidates,
     );
+    const optionMassStatus =
+      response.optionMassStatus ??
+      (Number.isFinite(optionMass) && optionMass > 0 ? "available" : "invalid");
     const provenance: DecisionProvenance = {
       runtime: this.options.runtime ?? "local-llm",
       runtimeVersion: this.options.runtimeVersion ?? "unknown",
@@ -88,8 +91,10 @@ export class LocalLLMDecisionRuntime implements DecisionRuntime {
         contextTokens: response.promptTokens ?? estimateTokens(DECISION_SYSTEM_PROMPT + prompt),
         options: input.options.length,
         selected,
-        optionMass,
-        lowOptionMass: optionMass < LOW_OPTION_MASS_THRESHOLD,
+        optionMass: optionMassStatus === "available" ? optionMass : undefined,
+        optionMassStatus,
+        lowOptionMass:
+          optionMassStatus === "available" ? optionMass < LOW_OPTION_MASS_THRESHOLD : undefined,
         probabilityStatus: DECISION_PROBABILITY_STATUS,
         promptVersion: DECISION_PROMPT_VERSION,
         promptSha256: await promptDigest(prompt),

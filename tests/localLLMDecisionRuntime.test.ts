@@ -89,4 +89,29 @@ describe("LocalLLMDecisionRuntime", () => {
     expect(batch).toHaveLength(2);
     expect(batch[0]!.trace.prompt).not.toBe(batch[1]!.trace.prompt);
   });
+
+  it("does not report unsupported option mass as zero", async () => {
+    const unsupported: LocalLLMAdapter = {
+      ...adapter,
+      execute: async () => ({
+        candidates: [
+          { token: "A", logprob: Math.log(0.8) },
+          { token: "B", logprob: Math.log(0.2) },
+        ],
+        executionMethod: "logit",
+        optionMassStatus: "unsupported",
+      }),
+    };
+    const result = await new LocalLLMDecisionRuntime(unsupported).decide({
+      state: "state",
+      question: "question",
+      options: [
+        { id: "a", description: "A" },
+        { id: "b", description: "B" },
+      ],
+    });
+    expect(result.trace.optionMassStatus).toBe("unsupported");
+    expect(result.trace.optionMass).toBeUndefined();
+    expect(result.trace.lowOptionMass).toBeUndefined();
+  });
 });

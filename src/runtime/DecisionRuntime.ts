@@ -32,6 +32,7 @@ export interface DecisionInput {
  * - `generated-text`: the model wrote an answer and the application parsed it.
  */
 export type DecisionReadout = "option-logits" | "generated-text";
+export type ProbabilityAvailability = "available" | "unavailable" | "unsupported" | "invalid";
 
 export interface DecisionTrace {
   model: string;
@@ -59,6 +60,8 @@ export interface DecisionTrace {
    * Undefined when the readout cannot measure it, as a parsed answer cannot.
    */
   optionMass?: number;
+  /** Whether option-mass extraction is meaningful for this runtime/model. */
+  optionMassStatus?: ProbabilityAvailability;
   /**
    * Diagnostic marker: `optionMass` fell below `LOW_OPTION_MASS_THRESHOLD`.
    *

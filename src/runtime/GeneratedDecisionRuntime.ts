@@ -86,6 +86,7 @@ export class GeneratedDecisionRuntime implements DecisionRuntime {
         selected,
         // Left unset: a parsed answer carries no information about the mass the
         // model placed anywhere else.
+        optionMassStatus: "unsupported",
         probabilityStatus: DECISION_PROBABILITY_STATUS,
         promptVersion: DECISION_PROMPT_VERSION,
         promptSha256: await promptDigest(prompt),

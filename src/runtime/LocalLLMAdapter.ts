@@ -2,6 +2,7 @@ import {
   DECISION_READOUT_TEMPERATURE,
   MAX_DECISION_OPTIONS,
   type LabelLogprob,
+  type ProbabilityAvailability,
 } from "./DecisionRuntime";
 
 export type LocalLLMExecutionMethod = "logit" | "structured" | "generated" | "head";
@@ -33,6 +34,8 @@ export interface LocalLLMExecutionResult {
   gpu?: string;
   quantization?: string;
   webllmVersion?: string;
+  /** Adapter/model-specific support for probability mass extraction. */
+  optionMassStatus?: ProbabilityAvailability;
 }
 
 export interface LocalLLMAdapter {

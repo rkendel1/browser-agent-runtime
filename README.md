@@ -17,6 +17,9 @@ DecisionRuntime
 
 - `WebLLMRuntime` backed by WebGPU via `@mlc-ai/web-llm`
 - `WebLLMDecisionRuntime`: typed decisions read from the model's option-token logits
+- `DefaultBrowserAgentRuntime`: bounded observe → decide → validate → execute loop
+- replaceable `BrowserExecutor` boundary and a browser-local `DOMBrowserExecutor`
+- semantic browser observations, snapshot invalidation, explicit context modes, and action evidence
 - lexical `ContextStore` with chunked page retrieval
 - a single `search_context` tool
 - `decideFromContext`: page → ContextStore → search_context → DecisionRuntime → typed decision
@@ -26,6 +29,45 @@ DecisionRuntime
   (each carrying a page and a retrieval query) and six option-mass probes
 - a browser benchmark that runs both readouts across three context sources on one
   loaded model, and exports the whole run as JSON
+
+## Browser execution runtime
+
+The model chooses only from capabilities declared by the application. The runtime resolves the
+chosen option back to its typed action, checks it against a fresh browser snapshot and policy, and
+only then calls the browser adapter.
+
+```ts
+const browser = new DOMBrowserExecutor();
+const runtime = new DefaultBrowserAgentRuntime(browser, decisionRuntime);
+
+const result = await runtime.run({
+  instruction: "Continue checkout if the order is ready.",
+  contextMode: "state",
+  maxSteps: 5,
+  maxLatency: 10_000,
+  maxRetries: 1,
+  maxObservationBytes: 64_000,
+  options: [
+    {
+      id: "continue",
+      description: "Continue to payment",
+      action: { type: "click", elementId: "checkout-button" },
+    },
+    { id: "stop", description: "Stop", action: { type: "stop" } },
+  ],
+});
+```
+
+`state` excludes rendered page text, `page` adds bounded page text, and `retrieved` adds only
+explicitly supplied retrieved context. Page-derived content is labelled untrusted data. It never
+changes the task, option set, authorization, action schema, or navigation policy. Snapshot IDs are
+checked immediately before execution, so a decision from snapshot A is blocked if the page has
+already advanced to snapshot B.
+
+Direct and generated decision runtimes both normalize to `BrowserDecision`; browser execution has
+one implementation. Generated readouts mark probability diagnostics `unsupported`, and adapters
+can do the same for model families that cannot expose valid option mass—unsupported extraction is
+never represented as zero.
 
 ## Decisions instead of answers
 
