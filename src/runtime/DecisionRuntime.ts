@@ -75,6 +75,22 @@ export interface DecisionTrace {
   promptVersion: string;
   promptSha256: string;
   prompt: string;
+  provenance?: DecisionProvenance;
+}
+
+export interface DecisionProvenance {
+  runtime: string;
+  runtimeVersion: string;
+  model: string;
+  modelRevision: string;
+  executionMethod: "logit" | "structured" | "generated" | "head";
+  promptRevision: string;
+  decisionSchemaRevision: string;
+  browser?: string;
+  webgpu?: boolean;
+  gpu?: string;
+  quantization?: string;
+  webllmVersion?: string;
 }
 
 export interface DecisionResult {
@@ -86,6 +102,62 @@ export interface DecisionResult {
 
 export interface DecisionRuntime {
   decide(input: DecisionInput): Promise<DecisionResult>;
+}
+
+export interface DecisionRuntimeCapabilities {
+  binary: boolean;
+  choice: boolean;
+  score: boolean;
+  batch: boolean;
+  distribution: boolean;
+  executionMethods: Array<DecisionProvenance["executionMethod"]>;
+}
+
+export type BinaryDecisionInput = Omit<DecisionInput, "options">;
+export type ChoiceDecisionInput = Omit<DecisionInput, "options"> & {
+  options: Array<DecisionOption | string>;
+};
+export type ScoreDecisionInput = Omit<DecisionInput, "options"> & {
+  options?: number[];
+};
+
+export interface BinaryDecisionResult extends Omit<DecisionResult, "selected" | "probabilities"> {
+  selected: boolean;
+  probabilities: Record<"true" | "false", number>;
+}
+
+export interface ChoiceDecisionResult extends DecisionResult {
+  selected: string;
+}
+
+export interface ScoreDecisionResult extends Omit<DecisionResult, "selected"> {
+  selected: number;
+}
+
+export function encodeCandidateLabels(options: readonly string[]): Map<string, string> {
+  if (options.length < 2 || options.length > MAX_DECISION_OPTIONS) {
+    throw new Error(`A decision supports between 2 and ${MAX_DECISION_OPTIONS} options.`);
+  }
+
+  const labels = new Map<string, string>();
+  for (const [index, option] of options.entries()) {
+    if (!option.trim()) {
+      throw new Error("Every candidate option needs a value.");
+    }
+    if (labels.has(option)) {
+      throw new Error(`Duplicate candidate option: ${option}`);
+    }
+    labels.set(option, optionLabel(index));
+  }
+  return labels;
+}
+
+export class DecisionBatch {
+  constructor(private readonly runtime: DecisionRuntime) {}
+
+  decide(inputs: readonly DecisionInput[]): Promise<DecisionResult[]> {
+    return Promise.all(inputs.map((input) => this.runtime.decide(input)));
+  }
 }
 
 /** Raised when the readout cannot be tied back to any declared option. */
